@@ -2,12 +2,14 @@ PATH
   remote: .
   specs:
     rubyapi (0.1.0)
+      base64 (~> 0.2)
       bigdecimal (~> 3.0)
       rack (~> 3.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
+    base64 (0.3.0)
     bigdecimal (3.3.1)
     diff-lcs (1.6.2)
     rack (3.2.6)
@@ -37,6 +39,7 @@ DEPENDENCIES
   rubyapi!
 
 CHECKSUMS
+  base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
   bigdecimal (3.3.1) sha256=eaa01e228be54c4f9f53bf3cc34fe3d5e845c31963e7fcc5bedb05a4e7d52218
   diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
   rack (3.2.6) sha256=5ed78e1f73b2e25679bec7d45ee2d4483cc4146eb1be0264fc4d94cb5ef212c2
