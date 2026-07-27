@@ -30,6 +30,39 @@ module RubyAPI
       @store[key] = value
     end
 
+    def sse(&block)
+      io = @request.env["rack.hijack"]&.call
+      return [500, {}, ["rack.hijack not available"]] unless io
+
+      stream = SSEStream.new
+      sse_out = SSE.new(io)
+
+      @response_headers["content-type"] = "text/event-stream"
+      @response_headers["cache-control"] = "no-cache"
+      @response_headers["connection"] = "keep-alive"
+      @response_status = 200
+
+      block.call(sse_out)
+      sse_out.close
+      @response_body = ""
+    end
+
+    def stream(&block)
+      body = StreamingBody.new
+      @response_headers["content-type"] = "text/plain"
+      @response_headers["transfer-encoding"] = "chunked"
+      @response_status = 200
+      @response_body = body
+
+      Thread.new do
+        begin
+          block.call(body)
+        ensure
+          body.close
+        end
+      end
+    end
+
     def apply_param_types!
       type_map = @route[:params]
       type_map.each do |name, type|

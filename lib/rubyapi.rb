@@ -10,6 +10,10 @@ require_relative "rubyapi/error_handler"
 require_relative "rubyapi/config"
 require_relative "rubyapi/di"
 require_relative "rubyapi/plugin"
+require_relative "rubyapi/websocket"
+require_relative "rubyapi/sse"
+require_relative "rubyapi/streaming"
+require_relative "rubyapi/job"
 require_relative "rubyapi/middleware/logging"
 require_relative "rubyapi/plugins/cors"
 require_relative "rubyapi/plugins/jwt"
@@ -67,6 +71,10 @@ module RubyAPI
       @router.add_route(method, path, **opts, &block)
     end
 
+    def websocket(path, &handler)
+      @router.add_route(:GET, path, websocket: true, block: handler)
+    end
+
     def group(prefix, &block)
       @router.push_prefix(prefix)
       instance_eval(&block)
@@ -117,6 +125,10 @@ module RubyAPI
       end
 
       route = @router.find(method, path)
+
+      if route && route[:websocket] && env["HTTP_UPGRADE"]&.downcase == "websocket"
+        return handle_websocket(env, route)
+      end
 
       ctx = Context.new(req, route || dummy_route(req))
 
@@ -173,8 +185,25 @@ module RubyAPI
         params: {},
         body: nil,
         inject: [],
-        depends: []
+        depends: [],
+        websocket: false
       }
+    end
+
+    def handle_websocket(env, route)
+      ws = WebSocket.new(env, &route[:block])
+      hijack_io = env["rack.hijack"]&.call
+      return [500, {}, ["rack.hijack not available"]] unless hijack_io
+
+      ws_thread = Thread.new do
+        ws.instance_variable_set(:@io, hijack_io)
+        ws.process!
+      end
+      ws_thread.join
+
+      [101, {}, []]
+    rescue => e
+      [500, { "content-type" => "application/json" }, [JSON.generate({ error: e.class.name, message: e.message })]]
     end
 
     def error_response(ctx)
@@ -224,13 +253,17 @@ module RubyAPI
       status = ctx.response_status || 200
       headers = { "content-type" => "application/json" }.merge(ctx.response_headers)
 
-      json = case body
-      when Hash, Array then JSON.generate(body)
-      when String then body
-      else body.to_s
-      end
+      if body.is_a?(StreamingBody)
+        [status, headers, body]
+      else
+        json = case body
+        when Hash, Array then JSON.generate(body)
+        when String then body
+        else body.to_s
+        end
 
-      [status, headers, [json]]
+        [status, headers, [json]]
+      end
     end
 
     def set_session_cookie(ctx, session)
