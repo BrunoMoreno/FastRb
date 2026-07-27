@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 RSpec.describe RubyAPI::WebSocket do
   it "creates a WebSocket instance" do

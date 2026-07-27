@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 class CustomError < StandardError; end
 class AnotherError < StandardError; end

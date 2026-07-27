@@ -3,7 +3,7 @@ module RubyAPI
     attr_accessor :environment, :settings
 
     def initialize
-      @environment = ENV.fetch("RUBYAPI_ENV", "development")
+      @environment = ENV.fetch("FASTRB_ENV", "development")
       @settings = default_settings
     end
 

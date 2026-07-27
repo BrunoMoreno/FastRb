@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 RSpec.describe RubyAPI::Plugins::CORS do
   include Rack::Test::Methods

@@ -10,7 +10,7 @@ module RubyAPI
       {
         openapi: "3.0.0",
         info: {
-          title: "RubyAPI App",
+          title: "FastRb App",
           version: "0.1.0"
         },
         paths: generate_paths

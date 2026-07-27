@@ -1,4 +1,4 @@
-require "rubyapi/cli"
+require "fastrb/cli"
 require "fileutils"
 require "tmpdir"
 

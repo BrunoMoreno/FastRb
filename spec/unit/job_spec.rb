@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 class TestJob < RubyAPI::Job
   def self.perform(name)

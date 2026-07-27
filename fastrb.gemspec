@@ -1,4 +1,4 @@
-require_relative "lib/rubyapi/version"
+require_relative "lib/fastrb/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "fastrb"
@@ -6,13 +6,13 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Bruno Queiroz"]
   spec.summary       = "A FastAPI-inspired web framework for Ruby"
   spec.description   = "FastRb is a modern web framework for Ruby, inspired by FastAPI, with optional typing, automatic validation, and OpenAPI documentation."
-  spec.homepage      = "https://github.com/bruno/rubyapi"
+  spec.homepage      = "https://github.com/BrunoMoreno/FastRb"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
 
   spec.files         = Dir["lib/**/*", "bin/*"]
   spec.bindir        = "bin"
-  spec.executables   = ["rubyapi"]
+  spec.executables   = ["fastrb"]
   spec.require_paths = ["lib"]
 
   spec.add_dependency "rack", "~> 3.0"

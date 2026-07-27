@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 class CurrentUser
   def initialize

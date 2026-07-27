@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 RSpec.describe RubyAPI::ParamConverters do
   describe ".convert" do

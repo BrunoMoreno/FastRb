@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 require "stringio"
 
 RSpec.describe RubyAPI::Middleware::StructuredLogger do

@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 class TestPlugin < RubyAPI::Plugin
   option :greeting, "Hello"

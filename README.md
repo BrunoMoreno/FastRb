@@ -1,4 +1,4 @@
-# RubyAPI
+# FastRb
 
 A FastAPI-inspired web framework for Ruby, with optional typing, automatic validation, and OpenAPI documentation.
 
@@ -9,25 +9,25 @@ A FastAPI-inspired web framework for Ruby, with optional typing, automatic valid
 
 ## Installation
 
-    gem install rubyapi
+    gem install fastrb
 
 Or add to your Gemfile:
 
-    gem "rubyapi", "~> 0.4.0"
+    gem "fastrb", "~> 0.4.0"
 
 ## Quick Start
 
 Create a new project:
 
-    rubyapi new myapp
+    fastrb new myapp
     cd myapp
     bundle install
-    rubyapi server
+    fastrb server
 
 ## Usage
 
 ```ruby
-require "rubyapi"
+require "fastrb"
 
 class UserSchema < RubyAPI::Schema
   field :name, type: String
@@ -183,9 +183,9 @@ MyJob.enqueue(user_id)  # runs asynchronously
 
 ## Configuration
 
-Set the environment via `RUBYAPI_ENV`:
+Set the environment via `FASTRB_ENV`:
 
-    RUBYAPI_ENV=production rubyapi server
+    FASTRB_ENV=production fastrb server
 
 Create environment-specific config in `config/environments/`:
 

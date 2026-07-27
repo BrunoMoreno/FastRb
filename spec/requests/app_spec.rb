@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 RSpec.describe RubyAPI::App do
   include Rack::Test::Methods

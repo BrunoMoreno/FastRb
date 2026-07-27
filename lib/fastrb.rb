@@ -1,24 +1,24 @@
-require_relative "rubyapi/version"
-require_relative "rubyapi/router"
-require_relative "rubyapi/context"
-require_relative "rubyapi/param_converters"
-require_relative "rubyapi/serializer"
-require_relative "rubyapi/openapi"
-require_relative "rubyapi/schema"
-require_relative "rubyapi/session"
-require_relative "rubyapi/error_handler"
-require_relative "rubyapi/config"
-require_relative "rubyapi/di"
-require_relative "rubyapi/plugin"
-require_relative "rubyapi/websocket"
-require_relative "rubyapi/sse"
-require_relative "rubyapi/streaming"
-require_relative "rubyapi/job"
-require_relative "rubyapi/middleware/logging"
-require_relative "rubyapi/plugins/cors"
-require_relative "rubyapi/plugins/jwt"
-require_relative "rubyapi/plugins/auth"
-require_relative "rubyapi/plugins/cache"
+require_relative "fastrb/version"
+require_relative "fastrb/router"
+require_relative "fastrb/context"
+require_relative "fastrb/param_converters"
+require_relative "fastrb/serializer"
+require_relative "fastrb/openapi"
+require_relative "fastrb/schema"
+require_relative "fastrb/session"
+require_relative "fastrb/error_handler"
+require_relative "fastrb/config"
+require_relative "fastrb/di"
+require_relative "fastrb/plugin"
+require_relative "fastrb/websocket"
+require_relative "fastrb/sse"
+require_relative "fastrb/streaming"
+require_relative "fastrb/job"
+require_relative "fastrb/middleware/logging"
+require_relative "fastrb/plugins/cors"
+require_relative "fastrb/plugins/jwt"
+require_relative "fastrb/plugins/auth"
+require_relative "fastrb/plugins/cache"
 
 module RubyAPI
   class App
@@ -288,7 +288,7 @@ module RubyAPI
         <!DOCTYPE html>
         <html>
         <head>
-          <title>RubyAPI Docs</title>
+          <title>FastRb Docs</title>
           <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css">
         </head>
         <body>

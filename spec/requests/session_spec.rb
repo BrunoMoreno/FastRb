@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 RSpec.describe RubyAPI::App do
   include Rack::Test::Methods
@@ -26,7 +26,7 @@ RSpec.describe RubyAPI::App do
       expect(last_response.status).to eq(200)
 
       cookie = last_response.headers["set-cookie"]
-      expect(cookie).to include("_rubyapi_session=")
+      expect(cookie).to include("_fastrb_session=")
 
       get "/profile", nil, { "HTTP_COOKIE" => cookie.split(";").first }
       expect(last_response.status).to eq(200)

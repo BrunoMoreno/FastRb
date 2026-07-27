@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 RSpec.describe RubyAPI::Config do
   subject(:config) { described_class.new }
@@ -8,12 +8,12 @@ RSpec.describe RubyAPI::Config do
       expect(config.environment).to eq("development")
     end
 
-    it "reads from RUBYAPI_ENV" do
-      ENV["RUBYAPI_ENV"] = "test"
+    it "reads from FASTRB_ENV" do
+      ENV["FASTRB_ENV"] = "test"
       config = described_class.new
       expect(config.environment).to eq("test")
     ensure
-      ENV.delete("RUBYAPI_ENV")
+      ENV.delete("FASTRB_ENV")
     end
   end
 

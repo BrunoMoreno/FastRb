@@ -1,4 +1,4 @@
-require "rubyapi"
+require "fastrb"
 
 RSpec.describe RubyAPI::Schema do
   class UserSchema < RubyAPI::Schema

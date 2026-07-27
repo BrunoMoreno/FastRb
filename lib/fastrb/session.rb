@@ -5,11 +5,11 @@ require "openssl"
 
 module RubyAPI
   class Session
-    SESSION_COOKIE = "_rubyapi_session".freeze
+    SESSION_COOKIE = "_fastrb_session".freeze
 
     def initialize(request, secret_key: nil)
       @request = request
-      @secret_key = secret_key || "rubyapi_default_secret"
+      @secret_key = secret_key || "fastrb_default_secret"
       @data = load_session
     end
 

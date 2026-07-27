@@ -13,12 +13,12 @@ module RubyAPI
       when "server"
         start_server
       when "version"
-        puts "rubyapi #{VERSION}"
+        puts "fastrb #{VERSION}"
       else
-        puts "Usage: rubyapi <command> [options]"
+        puts "Usage: fastrb <command> [options]"
         puts ""
         puts "Commands:"
-        puts "  new <name>    Create a new RubyAPI project"
+        puts "  new <name>    Create a new FastRb project"
         puts "  server        Start the server (Falcon/Puma)"
         puts "  version       Show version"
         exit 1
@@ -26,7 +26,7 @@ module RubyAPI
     end
 
     def self.new_project(name)
-      puts "Creating new RubyAPI project: #{name}"
+      puts "Creating new FastRb project: #{name}"
 
       FileUtils.mkdir_p(name)
       FileUtils.mkdir_p("#{name}/app")
@@ -44,7 +44,7 @@ module RubyAPI
       File.write("#{name}/spec/requests/hello_spec.rb", hello_spec_content)
       File.write("#{name}/README.md", readme_content(name))
 
-      puts "Done! cd #{name} && bundle install && rubyapi server"
+      puts "Done! cd #{name} && bundle install && fastrb server"
     end
 
     def self.start_server
@@ -74,7 +74,7 @@ module RubyAPI
 
     def self.main_rb_content
       <<~RUBY
-        require "rubyapi"
+        require "fastrb"
 
         class App < RubyAPI::App
           def initialize
@@ -104,7 +104,7 @@ module RubyAPI
 
     def self.spec_helper_content
       <<~RUBY
-        require "rubyapi"
+        require "fastrb"
         require "rack/test"
 
         RSpec.configure do |config|
@@ -143,7 +143,7 @@ module RubyAPI
       <<~MARKDOWN
         # #{name}
 
-        A RubyAPI application.
+        A FastRb application.
 
         ## Setup
 
@@ -151,7 +151,7 @@ module RubyAPI
 
         ## Running
 
-            rubyapi server
+            fastrb server
 
         ## Testing
 
