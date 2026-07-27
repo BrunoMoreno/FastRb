@@ -4,16 +4,24 @@ require_relative "rubyapi/context"
 require_relative "rubyapi/param_converters"
 require_relative "rubyapi/serializer"
 require_relative "rubyapi/openapi"
+require_relative "rubyapi/schema"
+require_relative "rubyapi/session"
+require_relative "rubyapi/error_handler"
+require_relative "rubyapi/config"
 
 module RubyAPI
   class App
-    attr_reader :router
+    include ErrorHandler
+
+    attr_reader :router, :config
 
     def initialize(&block)
       @router = Router.new
+      @config = Config.new
       @middlewares = []
       @before_hooks = []
       @after_hooks = []
+      @error_handlers = {}
       instance_eval(&block) if block
     end
 
@@ -83,12 +91,31 @@ module RubyAPI
       ctx.apply_param_types!
       return [ctx.response_status, ctx.response_headers.merge("content-type" => "application/json"), [JSON.generate(ctx.response_body)]] if ctx.response_status
 
-      @before_hooks.each { |hook| hook.call(ctx) }
-      result = route[:block].call(ctx)
-      @after_hooks.each { |hook| hook.call(ctx) }
+      if route[:body]
+        ctx.validate_body!(route[:body])
+        return [ctx.response_status, ctx.response_headers.merge("content-type" => "application/json"), [JSON.generate(ctx.response_body)]] if ctx.response_status
+      end
 
+      session = Session.new(req, secret_key: @config.get(:secret_key))
+      ctx.session = session
+
+      @before_hooks.each { |hook| hook.call(ctx) }
+
+      begin
+        result = route[:block].call(ctx)
+      rescue => e
+        handler_status = find_error_handler(e)
+        if handler_status
+          set_session_cookie(ctx, session)
+          return [handler_status, { "content-type" => "application/json" }, [JSON.generate({ error: e.class.name, message: e.message })]]
+        end
+        raise e
+      end
+
+      @after_hooks.each { |hook| hook.call(ctx) }
       ctx.response_body = result if result && !ctx.response_body
 
+      set_session_cookie(ctx, session)
       serialize_response(ctx)
     end
 
@@ -106,6 +133,21 @@ module RubyAPI
       end
 
       [status, headers, [json]]
+    end
+
+    def set_session_cookie(ctx, session)
+      cookie_value = session.serialize
+      Rack::Response.new("", 200, {
+        "set-cookie" => "#{Session::SESSION_COOKIE}=#{cookie_value}; path=/; HttpOnly"
+      })
+      ctx.response_headers["set-cookie"] = "#{Session::SESSION_COOKIE}=#{cookie_value}; path=/; HttpOnly"
+    end
+
+    def find_error_handler(exception)
+      @error_handlers.each do |klass, status|
+        return status if exception.is_a?(klass)
+      end
+      nil
     end
 
     def serve_openapi
