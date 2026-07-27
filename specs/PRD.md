@@ -1,4 +1,4 @@
-# PRD — RubyAPI
+# PRD — FastRb
 
 **Versão:** 2.0 (reestruturado em formato SDD)
 **Status:** Em elaboração
@@ -18,7 +18,7 @@
 
 ## 1. Visão Geral
 
-RubyAPI é um framework web para Ruby inspirado no FastAPI, com objetivo de oferecer produtividade equivalente combinando a expressividade do Ruby com tipagem opcional, validação declarativa e documentação OpenAPI automática. O framework prioriza baixo footprint de memória, inicialização rápida e uma API minimalista sobre Rack, com suporte prioritário ao servidor Falcon.
+FastRb é um framework web para Ruby inspirado no FastAPI, com objetivo de oferecer produtividade equivalente combinando a expressividade do Ruby com tipagem opcional, validação declarativa e documentação OpenAPI automática. O framework prioriza baixo footprint de memória, inicialização rápida e uma API minimalista sobre Rack, com suporte prioritário ao servidor Falcon.
 
 ## 2. Objetivos
 
@@ -54,7 +54,7 @@ Desenvolvedores Ruby vindos de Sinatra, Rails API ou Hanami; desenvolvedores Fas
 
 ### ADR-002: Tipagem opcional via DSL própria (não Sorbet/RBS)
 - **Contexto:** FastAPI usa type hints nativos do Python; Ruby não tem tipagem estática nativa madura o suficiente para essa DX no MVP.
-- **Decisão:** Tipagem declarada via DSL própria do RubyAPI (`params: { id: Integer }`), com conversão e validação em runtime.
+- **Decisão:** Tipagem declarada via DSL própria do FastRb (`params: { id: Integer }`), com conversão e validação em runtime.
 - **Consequência:** Sem checagem estática; validação ocorre apenas em request-time. Abre porta para adaptador Sorbet/RBS como plugin futuro (pós-v1.0).
 - **Alternativas rejeitadas:** Exigir Sorbet (aumenta curva de aprendizado, contraria objetivo de simplicidade).
 
@@ -172,21 +172,21 @@ O framework deve gerar `/openapi.json` automaticamente a partir das rotas regist
   **Then** a Swagger UI é renderizada consumindo `/openapi.json`.
 
 #### RF-08: CLI mínima
-A CLI deve suportar `rubyapi new`, `rubyapi server`.
+A CLI deve suportar `fastrb new`, `fastrb server`.
 
 **Critérios de aceite:**
-- **Given** o comando `rubyapi new blog`
+- **Given** o comando `fastrb new blog`
   **When** executado em um diretório vazio
-  **Then** a estrutura de projeto padrão é criada (app/, config/, config.ru, Gemfile, rubyapi.rb, test/, public/).
+  **Then** a estrutura de projeto padrão é criada (app/, config/, config.ru, Gemfile, fastrb.rb, test/, public/).
 - **Given** um projeto válido
-  **When** `rubyapi server` é executado
+  **When** `fastrb server` é executado
   **Then** o servidor sobe em modo produção usando Falcon (ou Puma como fallback).
 
 #### RF-09: Suíte RSpec configurada
-Todo projeto gerado por `rubyapi new` deve vir com RSpec configurado e pelo menos um teste de exemplo passando.
+Todo projeto gerado por `fastrb new` deve vir com RSpec configurado e pelo menos um teste de exemplo passando.
 
 **Critérios de aceite:**
-- **Given** um projeto recém-criado via `rubyapi new`
+- **Given** um projeto recém-criado via `fastrb new`
   **When** `bundle exec rspec` é executado
   **Then** a suíte roda sem erros de configuração e o teste de exemplo passa.
 
@@ -197,7 +197,7 @@ Todo projeto gerado por `rubyapi new` deve vir com RSpec configurado e pelo meno
 
 **Critérios de aceite:**
 - **Given** uma aplicação mínima (`get "/hello"`)
-  **When** medido o tempo entre `require "rubyapi"` e o servidor pronto para aceitar requisições
+  **When** medido o tempo entre `require "fastrb"` e o servidor pronto para aceitar requisições
   **Then** o tempo é inferior a 50ms em benchmark de CI.
 
 ---
@@ -243,7 +243,7 @@ Suporte a `rescue_from` mapeando exceções para respostas HTTP.
 Suporte a configuração distinta por `development`, `test`, `production` via `config/environments/`.
 
 **Critérios de aceite:**
-- **Given** variável `RUBYAPI_ENV=production`
+- **Given** variável `FASTRB_ENV=production`
   **When** a aplicação inicia
   **Then** as configurações de `config/environments/production.rb` são carregadas, sobrepondo defaults.
 
@@ -328,7 +328,7 @@ Suporte a enfileiramento e execução assíncrona de jobs.
 Nenhuma breaking change sem major version bump; API pública documentada e congelada.
 
 #### RF-24: Benchmark oficial
-Suíte de benchmark comparando RubyAPI a Sinatra e Hanami API em throughput, latência e uso de memória, publicada no README.
+Suíte de benchmark comparando FastRb a Sinatra e Hanami API em throughput, latência e uso de memória, publicada no README.
 
 #### RF-25: Publicação no RubyGems
 Gem publicada e versionada seguindo SemVer, compatível com Ruby 3.3+.
