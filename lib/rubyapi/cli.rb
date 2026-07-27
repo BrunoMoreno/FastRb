@@ -57,7 +57,7 @@ module RubyAPI
       <<~GEMFILE
         source "https://rubygems.org"
 
-        gem "rubyapi", "~> #{RubyAPI::VERSION}"
+        gem "fastrb", "~> #{RubyAPI::VERSION}"
         gem "rackup"
         gem "puma"
       GEMFILE
