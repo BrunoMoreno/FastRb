@@ -13,7 +13,7 @@ A FastAPI-inspired web framework for Ruby, with optional typing, automatic valid
 
 Or add to your Gemfile:
 
-    gem "fastrb", "~> 0.4.0"
+    gem "fastrb", "~> 0.2.0"
 
 ## Quick Start
 
