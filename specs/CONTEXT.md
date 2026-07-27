@@ -17,10 +17,10 @@ RubyAPI é um framework web Ruby inspirado no FastAPI. Ver `PRD.md` para requisi
 ---
 
 ## Estado Atual
-- [ ] Fase MVP (v0.1) — não iniciada
-- [ ] Fase v0.2 — não iniciada
-- [ ] Fase v0.3 — não iniciada
-- [ ] Fase v0.4 — não iniciada
+- [x] Fase MVP (v0.1) — concluída
+- [x] Fase v0.2 — concluída
+- [x] Fase v0.3 — concluída
+- [x] Fase v0.4 — concluída
 - [ ] Fase v1.0 — não iniciada
 
 ---
@@ -146,21 +146,21 @@ RubyAPI é um framework web Ruby inspirado no FastAPI. Ver `PRD.md` para requisi
 ## v0.4
 
 ### RF-19: WebSockets
-- [ ] T-67: Implementar suporte a rotas `websocket` via Falcon
-- [ ] T-68 (TEST): Teste de conexão e troca de mensagens WebSocket
+- [x] T-67: Implementar suporte a rotas `websocket` via Falcon
+- [x] T-68 (TEST): Teste de conexão e troca de mensagens WebSocket
 
 ### RF-20: SSE
-- [ ] T-69: Implementar `stream` com suporte a eventos SSE
-- [ ] T-70 (TEST): Teste de recepção incremental de eventos
+- [x] T-69: Implementar `stream` com suporte a eventos SSE
+- [x] T-70 (TEST): Teste de recepção incremental de eventos
 
 ### RF-21: Streaming de respostas
-- [ ] T-71: Implementar suporte a respostas chunked
-- [ ] T-72 (TEST): Teste de streaming de resposta HTTP
+- [x] T-71: Implementar suporte a respostas chunked
+- [x] T-72 (TEST): Teste de streaming de resposta HTTP
 
 ### RF-22: Background Jobs
-- [ ] T-73: Implementar API de enfileiramento (`Job.enqueue`)
-- [ ] T-74: Implementar worker de execução assíncrona
-- [ ] T-75 (TEST): Teste de execução e registro de erro de job
+- [x] T-73: Implementar API de enfileiramento (`Job.enqueue`)
+- [x] T-74: Implementar worker de execução assíncrona
+- [x] T-75 (TEST): Teste de execução e registro de erro de job
 
 ---
 
