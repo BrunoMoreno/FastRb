@@ -13,7 +13,7 @@ A FastAPI-inspired web framework for Ruby, with optional typing, automatic valid
 
 Or add to your Gemfile:
 
-    gem "rubyapi", "~> 0.3.0"
+    gem "rubyapi", "~> 0.4.0"
 
 ## Quick Start
 
@@ -102,6 +102,45 @@ app = RubyAPI::App.new do
 end
 ```
 
+### WebSockets
+
+```ruby
+app = RubyAPI::App.new do
+  websocket "/ws" do |ws|
+    ws.on_message do |msg|
+      ws.send("echo: #{msg}")
+    end
+  end
+end
+```
+
+### Server-Sent Events
+
+```ruby
+app = RubyAPI::App.new do
+  get "/events" do |ctx|
+    ctx.sse do |out|
+      loop do
+        out.send(event: "tick", data: Time.now.to_s)
+        sleep 1
+      end
+    end
+  end
+end
+```
+
+### Background Jobs
+
+```ruby
+class MyJob < RubyAPI::Job
+  def self.perform(user_id)
+    UserMailer.send_welcome(user_id).deliver
+  end
+end
+
+MyJob.enqueue(user_id)  # runs asynchronously
+```
+
 ## Features
 
 - **Routing**: Trie-based O(1) routing with support for path params, groups, and all HTTP methods
@@ -120,6 +159,10 @@ end
 - **Official Plugins**: CORS, JWT authentication, Auth guards, in-memory Cache
 - **Structured Logging**: JSON-formatted request logging with timing
 - **Metrics**: Per-route request count and latency tracking
+- **WebSockets**: WebSocket route support with `on_message`, `on_open`, `on_close` handlers
+- **Server-Sent Events**: SSE streaming with `ctx.sse` helper
+- **Streaming**: Chunked HTTP responses with `ctx.stream` helper
+- **Background Jobs**: In-process async job queue with `Job.enqueue`
 
 ## Supported Types
 
