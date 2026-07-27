@@ -1,4 +1,5 @@
 require "fileutils"
+require_relative "version"
 
 module RubyAPI
   class CLI
@@ -56,7 +57,7 @@ module RubyAPI
       <<~GEMFILE
         source "https://rubygems.org"
 
-        gem "rubyapi", "~> #{VERSION}"
+        gem "rubyapi", "~> #{RubyAPI::VERSION}"
         gem "rackup"
         gem "puma"
       GEMFILE
