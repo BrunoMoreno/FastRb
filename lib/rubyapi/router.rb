@@ -19,7 +19,8 @@ module RubyAPI
         pattern: pattern,
         param_names: param_names,
         block: block,
-        params: opts[:params] || {}
+        params: opts[:params] || {},
+        body: opts[:body]
       }
 
       @routes << route
