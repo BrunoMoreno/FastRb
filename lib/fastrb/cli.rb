@@ -48,7 +48,13 @@ module RubyAPI
     end
 
     def self.start_server
-      require_relative "../../config.ru"
+      require "rackup"
+      rackup_file = File.join(Dir.pwd, "config.ru")
+      unless File.exist?(rackup_file)
+        puts "Error: config.ru not found in current directory"
+        exit 1
+      end
+      Rackup::Server.start(config: rackup_file, Host: "0.0.0.0", Port: 3000)
     end
 
     private
@@ -79,11 +85,7 @@ module RubyAPI
         class App < RubyAPI::App
           def initialize
             super do
-              # Middleware
-              # use MyMiddleware
-
-              # Routes
-              include Routes
+              Routes.apply(self)
             end
           end
         end
@@ -93,8 +95,8 @@ module RubyAPI
     def self.routes_rb_content
       <<~RUBY
         module Routes
-          def self.included(base)
-            base.get "/hello" do
+          def self.apply(app)
+            app.get "/hello" do
               { message: "Hello World" }
             end
           end
