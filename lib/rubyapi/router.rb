@@ -20,7 +20,9 @@ module RubyAPI
         param_names: param_names,
         block: block,
         params: opts[:params] || {},
-        body: opts[:body]
+        body: opts[:body],
+        injected_deps: opts[:inject] || [],
+        dependency_checks: opts[:depends] || []
       }
 
       @routes << route

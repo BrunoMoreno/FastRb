@@ -8,20 +8,30 @@ require_relative "rubyapi/schema"
 require_relative "rubyapi/session"
 require_relative "rubyapi/error_handler"
 require_relative "rubyapi/config"
+require_relative "rubyapi/di"
+require_relative "rubyapi/plugin"
+require_relative "rubyapi/middleware/logging"
+require_relative "rubyapi/plugins/cors"
+require_relative "rubyapi/plugins/jwt"
+require_relative "rubyapi/plugins/auth"
+require_relative "rubyapi/plugins/cache"
 
 module RubyAPI
   class App
     include ErrorHandler
+    include DI
 
-    attr_reader :router, :config
+    attr_reader :router, :config, :container
 
     def initialize(&block)
       @router = Router.new
       @config = Config.new
+      @container = Container.new
       @middlewares = []
       @before_hooks = []
       @after_hooks = []
       @error_handlers = {}
+      @plugins = []
       instance_eval(&block) if block
     end
 
@@ -53,6 +63,10 @@ module RubyAPI
       @router.add_route(:HEAD, path, **opts, &block)
     end
 
+    def route(method, path, **opts, &block)
+      @router.add_route(method, path, **opts, &block)
+    end
+
     def group(prefix, &block)
       @router.push_prefix(prefix)
       instance_eval(&block)
@@ -71,6 +85,24 @@ module RubyAPI
       @after_hooks << hook
     end
 
+    def plugin(name_or_klass, **opts)
+      klass = name_or_klass.is_a?(Class) ? name_or_klass : PluginRegistry.find(name_or_klass)
+      return unless klass
+
+      old_options = klass.options.dup
+      opts.each { |k, v| klass.option(k, v) }
+
+      @plugins << klass
+      klass.on_load(self)
+    rescue => e
+      klass.options.replace(old_options) if old_options
+      raise e
+    end
+
+    def register(name, &block)
+      @container.register(name, &block)
+    end
+
     def call(env)
       req = Rack::Request.new(env)
       path = req.path_info
@@ -85,21 +117,31 @@ module RubyAPI
       end
 
       route = @router.find(method, path)
+
+      ctx = Context.new(req, route || dummy_route(req))
+
+      @before_hooks.each do |hook|
+        hook.call(ctx)
+        if ctx.response_status
+          return error_response(ctx)
+        end
+      end
+
       return [404, { "content-type" => "application/json" }, ['{"error":"Not Found"}']] unless route
 
-      ctx = Context.new(req, route)
       ctx.apply_param_types!
-      return [ctx.response_status, ctx.response_headers.merge("content-type" => "application/json"), [JSON.generate(ctx.response_body)]] if ctx.response_status
+      return error_response(ctx) if ctx.response_status
 
       if route[:body]
         ctx.validate_body!(route[:body])
-        return [ctx.response_status, ctx.response_headers.merge("content-type" => "application/json"), [JSON.generate(ctx.response_body)]] if ctx.response_status
+        return error_response(ctx) if ctx.response_status
       end
 
       session = Session.new(req, secret_key: @config.get(:secret_key))
       ctx.session = session
 
-      @before_hooks.each { |hook| hook.call(ctx) }
+      inject_deps(ctx, route)
+      return error_response(ctx) if ctx.response_status
 
       begin
         result = route[:block].call(ctx)
@@ -121,6 +163,62 @@ module RubyAPI
 
     private
 
+    def dummy_route(req)
+      {
+        method: req.request_method.upcase,
+        path: req.path_info,
+        pattern: /\A#{Regexp.escape(req.path_info)}\z/,
+        param_names: [],
+        block: nil,
+        params: {},
+        body: nil,
+        inject: [],
+        depends: []
+      }
+    end
+
+    def error_response(ctx)
+      headers = { "content-type" => "application/json" }.merge(ctx.response_headers)
+      body = case ctx.response_body
+      when Hash, Array then JSON.generate(ctx.response_body)
+      when String then ctx.response_body
+      else ctx.response_body.to_s
+      end
+      [ctx.response_status, headers, [body]]
+    end
+
+    def inject_deps(ctx, route)
+      deps = route[:injected_deps] || []
+      deps.each do |name|
+        resolved = @container.resolve(name)
+        ctx.set(name, resolved)
+      end
+
+      checks = route[:dependency_checks] || []
+      checks.each do |check_def|
+        check_val = check_def[:check]
+        status = check_def[:status] || 401
+
+        allowed = case check_val
+        when Proc
+          check_val.call(ctx)
+        when Symbol
+          dep = @container.resolve(check_val)
+          dep&.call(ctx)
+        when Class
+          check_val.new.call(ctx)
+        else
+          true
+        end
+
+        unless allowed
+          ctx.response_status = status
+          ctx.response_body = { error: "Forbidden" }
+          return
+        end
+      end
+    end
+
     def serialize_response(ctx)
       body = ctx.response_body
       status = ctx.response_status || 200
@@ -137,9 +235,6 @@ module RubyAPI
 
     def set_session_cookie(ctx, session)
       cookie_value = session.serialize
-      Rack::Response.new("", 200, {
-        "set-cookie" => "#{Session::SESSION_COOKIE}=#{cookie_value}; path=/; HttpOnly"
-      })
       ctx.response_headers["set-cookie"] = "#{Session::SESSION_COOKIE}=#{cookie_value}; path=/; HttpOnly"
     end
 

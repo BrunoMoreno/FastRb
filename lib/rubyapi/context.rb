@@ -15,10 +15,19 @@ module RubyAPI
       @files = extract_files
       @session = {}
       @response_headers = {}
+      @store = {}
     end
 
     def session=(val)
       @session = val
+    end
+
+    def get(key)
+      @store[key]
+    end
+
+    def set(key, value)
+      @store[key] = value
     end
 
     def apply_param_types!
